@@ -11,7 +11,7 @@ import { SalesContactForm } from "@/components/sales-contact-form";
 
 import { RegisterForm } from "./register-form";
 import wizSpeakIcon from "@/assets/wizspeak-icon.svg";
-import nebusisLogo from "@assets/logo-nebusis.png";
+import nebusisLogo from "@assets/nebusis-logo.png";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
