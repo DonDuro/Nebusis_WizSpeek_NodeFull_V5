@@ -1,6 +1,9 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import { db } from "./db";
+import { users } from "../shared/schema";
+import { eq } from "drizzle-orm";
 
 const app = express();
 app.use(express.json());
@@ -36,7 +39,35 @@ app.use((req, res, next) => {
   next();
 });
 
+// Auto-seed function for production deployment
+async function autoSeedIfNeeded() {
+  try {
+    // Check if admin users exist
+    const adminUser = await db.select().from(users).where(eq(users.username, "calvarado")).limit(1);
+    
+    if (adminUser.length === 0) {
+      console.log("🌱 No admin users found, running auto-seed for production...");
+      
+      // Import and run the seed function
+      const seedModule = await import("../seed.js");
+      await seedModule.default();
+      
+      console.log("✅ Auto-seed completed successfully!");
+    } else {
+      console.log("✅ Admin users exist, skipping auto-seed");
+    }
+  } catch (error) {
+    console.error("❌ Auto-seed failed:", error);
+    // Don't crash the server if seeding fails
+  }
+}
+
 (async () => {
+  // Run auto-seed in production
+  if (process.env.NODE_ENV === "production") {
+    await autoSeedIfNeeded();
+  }
+
   const server = await registerRoutes(app);
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
