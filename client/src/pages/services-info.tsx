@@ -8,8 +8,7 @@ import { z } from "zod";
 import { useToast } from "@/hooks/use-toast";
 import { Mail, Bot, ArrowLeft } from "lucide-react";
 import { Link } from "wouter";
-import nebusisLogo from "@assets/Logo NEBUSIS_1753038682969.png";
-
+import nebusisLogo from "@assets/nebusis-logo.png";
 const servicesSchema = z.object({
   firstName: z.string().min(1, "First name is required"),
   lastName: z.string().min(1, "Last name is required"),
