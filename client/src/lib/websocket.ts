@@ -8,15 +8,23 @@ class WebSocketManager {
   private maxReconnectAttempts = 5;
 
   connect() {
-    const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
-    const wsUrl = `${protocol}//${window.location.host}/ws`;
-    
+    const customEnvUrl = import.meta.env.VITE_SOCKET_SERVER_URL;
+    let wsUrl: string;
+
+    if (customEnvUrl) {
+      const protocol = customEnvUrl.startsWith("https") ? "wss:" : "ws:";
+      wsUrl = `${protocol}//${new URL(customEnvUrl).host}/ws`;
+    } else {
+      const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+      wsUrl = `${protocol}//${window.location.host}/ws`;
+    }
+
     this.ws = new WebSocket(wsUrl);
 
     this.ws.onopen = () => {
       console.log("WebSocket connected");
       this.reconnectAttempts = 0;
-      
+
       // Authenticate
       const token = getAuthToken();
       if (token) {
